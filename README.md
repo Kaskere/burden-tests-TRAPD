@@ -1,5 +1,5 @@
 # burden-tests-TRAPD
-Runs burden test against publicly available genomes.
+Runs burden test against publicly available genomes. No internal controls needed
 
 Debugged version of original repo
 
