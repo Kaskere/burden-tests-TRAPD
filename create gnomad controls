@@ -1,0 +1,43 @@
+
+
+
+#!/bin/bash -x
+
+#PBS -N makecontrols
+#PBS -q batch
+#PBS -l walltime=72:00:00
+#PBS -l nodes=1:ppn=4
+#PBS -l feature=largescratch
+#PBS -j oe
+####PBS -A
+
+inpath=/dir
+outpath=/dir
+outpath1=/dir
+bed=/dir/Twist_ComprehensiveExome_targets_hg38-2bp.bed
+mkdir $outpath
+chmod u+rwx $outpath
+mkdir $outpath1
+chmod u+rwx $outpath1
+
+####################extracts external controls for male infertility burden tests#################################
+cd $inpath
+
+module load  bio/bcftools/1.10.2
+
+for file in $inpath/gnomad.genomes.v3.1.1.sites.*.vcf.bgz ;
+do
+        sample=$(basename $file ".vcf.bgz")
+        outfile1=$outpath/$sample".viewed.txt"
+        awk1=$outpath/$sample".awk1.txt"
+        awk2=$outpath/$sample".awk2.txt"
+        echo outputs are $sample $outfile1 $awk1 $awk2
+        outfile=$outpath1/$sample"nfeXY.txt"
+        bcftools view $file -R $bed -f PASS -o $outfile1
+
+        awk '{gsub(/AC_controls_and_biobanks_nfe_XY/,"ACnfeXY")}1'  $outfile1 > $awk1
+
+        awk '{gsub(/AN_controls_and_biobanks_nfe_XY/,"ANnfeXY")}1'  $awk1 >  $awk2
+
+        bcftools query -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%INFO/ACnfeXY\t%INFO/ANnfeXY\n' $awk2 > $outfile
+done
