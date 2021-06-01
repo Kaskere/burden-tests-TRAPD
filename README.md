@@ -10,5 +10,5 @@ Normalisation - with BCFTools
 AC, AN etc. tags can be added by BCFTools plugin
 https://samtools.github.io/bcftools/howtos/plugin.fill-tags.html
 
-External controls - gnomAD or any other suitable repo
+External controls - gnomAD v3.1 genomes or any other suitable repo
 
