@@ -1,0 +1,28 @@
+#!/bin/bash 
+
+
+
+#PBS -N normalise
+#PBS -q long
+#PBS -l walltime=72:00:00
+#PBS -l nodes=1:ppn=4
+#PBS -l feature=largescratch
+
+
+
+module load bio/bcftools/1.10.2
+dir=/mnt/dir
+outpath=/mnt/outdir
+ref=/mnt/references/hg38.fasta
+mkdir $outpath
+chmod u+rwx $outpath
+
+for file in $dir/*.vcf.gz ;
+do
+	
+        sample=$(basename $file ".vcf.gz")
+        outfile=$outpath/$sample"_norm.vcf"
+        echo outputs are $sample $outfile
+
+	bcftools norm -m -any -f $ref $file | bgzip > $outfile
+done
