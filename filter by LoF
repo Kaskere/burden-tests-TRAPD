@@ -1,0 +1,27 @@
+
+#!/bin/bash -x
+
+#PBS -N getLof
+#PBS -q batch
+#PBS -l walltime=72:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l feature=largescratch
+#PBS -j oe
+####PBS -A
+
+
+
+
+export inpath=/dir
+export outpath=/dir
+
+mkdir -p $outpath
+chmod u+rwx $outpath
+for file in $inpath/*.vcf ;
+do
+        sample=$(basename $file ".vcf")
+        outfile=$outpath/$sample"_loftags.vcf"
+
+
+        java -jar /mnt/home/tools/snpEff/snpEff.jar -lof  GRCh38.99 $file |  java -jar /mnt/home/tools/snpEff/SnpSift.jar filter "(exists LOF)" | sed -ne '/#/p;/LOF/p'  > $outfile
+done
