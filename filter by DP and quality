@@ -1,0 +1,32 @@
+#!/bin/bash -x
+
+#PBS -N filter_vcf
+#PBS -q batch
+#PBS -l walltime=72:00:00
+#PBS -l nodes=1:ppn=8,mem=80g
+#PBS -l feature=largescratch
+#PBS -j oe
+####PBS -A
+
+
+module load bio/bcftools/1.10.2
+
+dir=/mnt/dir
+
+outpath=/mnt/dir
+
+mkdir $outpath
+chmod u+rwx $outpath
+
+###############filters vcfs by qual and dp for trapd######################
+
+for file in $dir/*gz ;
+do
+        sample=$(basename $file ".gz")
+        outfile=$outpath/$sample"_filtered.vcf"
+        echo $file $sample
+        bcftools filter -i 'TYPE="snp" && MIN(DP)>5 && QUAL>10' $file > $outfile
+done
+
+
+#######for gnomad controls: bcftools filter -i 'allele_type="snv" && MIN(VarDP)>5 && QUALapprox>10' file > out 
