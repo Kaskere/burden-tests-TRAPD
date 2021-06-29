@@ -23,5 +23,5 @@ do
         outfile=$outpath/$sample"_loftags.vcf"
 
 
-        java -jar /mnt/home/tools/snpEff/snpEff.jar -lof  GRCh38.99 $file |  java -jar /mnt/home/tools/snpEff/SnpSift.jar filter "(exists LOF)" | sed -ne '/#/p;/LOF/p'  > $outfile
+        java -jar /mnt/home/usr/tools/snpEff/snpEff.jar -lof  GRCh38.99 $file |  java -jar /mnt/home/usr/tools/snpEff/SnpSift.jar filter "LOF[*].PERC > 0.5"  > $outfile
 done
