@@ -1,7 +1,7 @@
 # burden-tests-TRAPD
 Runs burden test against publicly available genomes. No internal controls needed
 
-Debugged version of original repo
+Debugged make_snp.py of original repo https://github.com/mhguo1/TRAPD
 
 vcf type - VEP annotated, normalised and with AC, AN tags added
 
