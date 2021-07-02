@@ -3,41 +3,33 @@
 
 #!/bin/bash -x
 
-#PBS -N makecontrols
+#PBS -N filter_vcf
 #PBS -q batch
 #PBS -l walltime=72:00:00
-#PBS -l nodes=1:ppn=4
+#PBS -l nodes=1:ppn=1
 #PBS -l feature=largescratch
 #PBS -j oe
 ####PBS -A
+#PBS -o rsu
 
-inpath=/dir
-outpath=/dir
-outpath1=/dir
-bed=/dir/Twist_ComprehensiveExome_targets_hg38-2bp.bed
+module load bio/bcftools/1.10.2
+
+dir=/mnt/home/groups/rsu/alksere_b/azoo/ext_controls/gnomad/viewed_100bpbed
+#finally the filtering should maybe be done only after quality and protein prediction; maybe lof is not needed
+outpath=/mnt/home/groups/rsu/alksere_b/azoo/ext_controls/gnomad/viewed_100bpbed_dpgmaf10_15__filtered
+
 mkdir $outpath
 chmod u+rwx $outpath
-mkdir $outpath1
-chmod u+rwx $outpath1
 
-####################extracts external controls for male infertility burden tests#################################
-cd $inpath
+###############filters vcfs by maf, qual and dp for trapd. additional normalisation with bcftools is also needed. ######################
 
-module load  bio/bcftools/1.10.2
-
-for file in $inpath/gnomad.genomes.v3.1.1.sites.*.vcf.bgz ;
+for file in $dir/gnomad.genomes.v3.1.1.sites.chr2.viewed_100bp.vcf ;
 do
-        sample=$(basename $file ".vcf.bgz")
-        outfile1=$outpath/$sample".viewed.txt"
-        awk1=$outpath/$sample".awk1.txt"
-        awk2=$outpath/$sample".awk2.txt"
-        echo outputs are $sample $outfile1 $awk1 $awk2
-        outfile=$outpath1/$sample"nfeXY.txt"
-        bcftools view $file -R $bed -f PASS -o $outfile1
-
-        awk '{gsub(/AC_controls_and_biobanks_nfe_XY/,"ACnfeXY")}1'  $outfile1 > $awk1
-
-        awk '{gsub(/AN_controls_and_biobanks_nfe_XY/,"ANnfeXY")}1'  $awk1 >  $awk2
-
-        bcftools query -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%INFO/ACnfeXY\t%INFO/ANnfeXY\n' $awk2 > $outfile
+        sample=$(basename $file ".vcf")
+        outfile=$outpath/$sample"_filtered.vcf"
+        echo $file $sample
+        bcftools filter -i 'TYPE="protein_coding" && MIN(DP)>10 && GQ>15' | bcftools view -q 0.01:minor $file > $outfile
 done
+
+# Double check filtering outputs. in some cases, female controls have to be removed by sed 's/;[^;]*_XX[^;]*//g'
+
