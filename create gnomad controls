@@ -6,7 +6,7 @@
 #PBS -N filter_vcf
 #PBS -q batch
 #PBS -l walltime=72:00:00
-#PBS -l nodes=1:ppn=1
+#PBS -l nodes=1:ppn=4
 #PBS -l feature=largescratch
 #PBS -j oe
 ####PBS -A
@@ -14,14 +14,13 @@
 
 module load bio/bcftools/1.10.2
 
-dir=/mnt/home/groups/rsu/alksere_b/azoo/ext_controls/gnomad/viewed_100bpbed
-#finally the filtering should maybe be done only after quality and protein prediction; maybe lof is not needed
-outpath=/mnt/home/groups/rsu/alksere_b/azoo/ext_controls/gnomad/viewed_100bpbed_dpgmaf10_15__filtered
+dir=/mnt/home/dir
+outpath=/mnt/home/outdir
 
 mkdir $outpath
 chmod u+rwx $outpath
 
-###############filters vcfs by maf, qual and dp for trapd. additional normalisation with bcftools is also needed. ######################
+###############filters vcfs by maf, qual and dp for trapd. additional normalisation with bcftools is needed before. ######################
 
 for file in $dir/gnomad.genomes.v3.1.1.sites.chr2.viewed_100bp.vcf ;
 do
@@ -31,5 +30,5 @@ do
         bcftools filter -i 'TYPE="protein_coding" && MIN(DP)>10 && GQ>15' | bcftools view -q 0.01:minor $file > $outfile
 done
 
-# Double check filtering outputs. in some cases, female controls have to be removed by sed 's/;[^;]*_XX[^;]*//g'
+# for testing male exomes, female controls have to be removed by sed 's/;[^;]*_XX[^;]*//g' and vice versa
 
