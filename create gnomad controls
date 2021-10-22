@@ -34,3 +34,4 @@ done
 
 # for testing male exomes, female controls have to be removed by sed 's/;[^;]*_XX[^;]*//g' and vice versa
 ##  annotation summaries can be obtained with snpEFF: java -Xmx8g -jar /mnt/home.tools/snpEff/snpEff.jar -v -stats gnomad.html GRCh38.99  > $outfile 
+### snepEff -v canon option -> for writing only one canonical transcript per gene
