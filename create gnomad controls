@@ -21,6 +21,8 @@ mkdir $outpath
 chmod u+rwx $outpath
 
 ###############filters vcfs by maf, qual and dp for trapd. additional normalisation with bcftools is needed before. ######################
+############### BEFORE: cut out introns from vcf with bcftools view and bedfile of interest
+###############custom bedfiles with more than 2bp around exon - intron boundary should be used. bedfiles can be made with bedtools, with company provided bedfile and reference from UCSC
 
 for file in $dir/gnomad.genomes.v3.1.1.sites.chr2.viewed_100bp.vcf ;
 do
@@ -31,4 +33,4 @@ do
 done
 
 # for testing male exomes, female controls have to be removed by sed 's/;[^;]*_XX[^;]*//g' and vice versa
-
+##  annotation summaries can be obtained with snpEFF: java -Xmx8g -jar /mnt/home.tools/snpEff/snpEff.jar -v -stats gnomad.html GRCh38.99  > $outfile 
